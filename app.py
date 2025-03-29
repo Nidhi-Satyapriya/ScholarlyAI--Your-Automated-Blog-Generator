@@ -44,7 +44,7 @@ content_writer= Agent(
     llm=llm
 )
 
-# Research Tasks
+# Research Task- 1: Research Analysis
 research_tasks= Task(
     description= ("""
         1. Conduct comprehensive research on {topic} including:
@@ -66,6 +66,27 @@ research_tasks= Task(
     agent= senior_research_analyst
 )
 
+# Research Task- 2: Content Generation
+writing_task= Task(
+    description= ("""Using the research brief provided, create an ongoing blog post that:  
+                  1. Transforms technical information into accessible content
+                  2. Maintains all factual accuracy and citations from the research
+                  3. Includes:
+                         - Attention-grabbing introduction
+                         - Well-structured body sections with clear headings
+                         - Compelling conclusion
+                   4. Preserves all source citations in [Source: URL ] format
+                   5. Includes references section at the end
+    """),
+    expected_output=""" A polished blog post in markdown format that:
+    - Engages readers while maintaining accuracy
+    - Contains properly structured sections
+    - Includes Inline citations hyperlinked to the original source url
+    - Presents information in an accessible yet informative way
+    Follows proper markdown formatting, use h1 for title and h3 for the sub-sections.
+    """,
+    agent= content_writer
+)
 
 # Advanced configuration with detailed parameters
 llm = LLM(
