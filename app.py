@@ -1,16 +1,31 @@
 from crewai import Agent, Task, Crew, LLM
 from crewai_tools import SerperDevTool
 from dotenv import load_dotenv
+import os 
 
 load_dotenv()
 
 topic="Medical Industry using Generative AI"
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+SERPER_API_KEY = os.getenv("SERPER_API_KEY")
+
 # Tool 1- Basic configuration
-llm = LLM(model="gpt-3.5-turbo")
+llm = LLM(
+    model="gpt-3.5-turbo",
+    api_key=OPENAI_API_KEY,
+    temperature=0.7,        # Higher for more creative outputs
+    timeout=120,           # Seconds to wait for response
+    max_tokens=4000,       # Maximum length of response
+    top_p=0.9,            # Nucleus sampling parameter
+    frequency_penalty=0.1, # Reduce repetition
+    presence_penalty=0.1,  # Encourage topic diversity
+    response_format={"type": "json"},  # Structured output
+    seed=42               # For reproducibility
+)
 
 # Tool 2-
-search_tool= SerperDevTool(n=10)
+search_tool= SerperDevTool(api_key=SERPER_API_KEY, n=10)
 
 # Agent 1
 senior_research_analyst= research_agent = Agent(
@@ -88,15 +103,12 @@ writing_task= Task(
     agent= content_writer
 )
 
-# Advanced configuration with detailed parameters
-llm = LLM(
-    model="gpt-3.5-turbo",
-    temperature=0.7,        # Higher for more creative outputs
-    timeout=120,           # Seconds to wait for response
-    max_tokens=4000,       # Maximum length of response
-    top_p=0.9,            # Nucleus sampling parameter
-    frequency_penalty=0.1, # Reduce repetition
-    presence_penalty=0.1,  # Encourage topic diversity
-    response_format={"type": "json"},  # For structured outputs
-    seed=42               # For reproducible results
+crew= Crew(
+    agents=[senior_research_analyst, content_writer],
+    tasks=[research_tasks, writing_task],
+    verbose= True
 )
+
+result = crew.kickoff(inputs={"topic": topic})
+
+print(result)
